@@ -45,6 +45,7 @@ messages nor reports. XXX not true, emit a 07 report !
 
 from pylint.checkers.base_checker import BaseChecker, BaseTokenChecker
 from pylint.checkers.mapreduce_checker import MapReduceMixin
+from pylint.checkers.deprecated import DeprecatedMixin
 from pylint.utils import register_plugins
 
 
