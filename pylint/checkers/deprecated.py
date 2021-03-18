@@ -16,6 +16,7 @@ ACCEPTABLE_NODES = (
 )
 
 
+
 class DeprecatedMixin:
     """A mixin implementing logic for checking deprecated symbols.
     A class implementing mixin must define "deprecated-method" Message.
@@ -26,6 +27,11 @@ class DeprecatedMixin:
             "Using deprecated method %s()",
             "deprecated-method",
             "The method is marked as deprecated and will be removed in the future.",
+        ),
+        "W1555": (
+            "Using deprecated class %s()",
+            "deprecated-class",
+            "The class is marked as deprecated and will be removed in the future.",
         ),
         "W1511": (
             "Using deprecated argument %s of method %s()",
@@ -44,10 +50,20 @@ class DeprecatedMixin:
             for inferred in node.func.infer():
                 # Calling entry point for deprecation check logic.
                 self.check_deprecated_method(node, inferred)
+                self.check_deprecated_class(node, inferred)
         except astroid.InferenceError:
             pass
 
     def deprecated_methods(self) -> Container[str]:
+        """Callback returning the deprecated methods/functions.
+
+        Returns:
+            collections.abc.Container of deprecated function/method names.
+        """
+        # pylint: disable=no-self-use
+        return ()
+
+    def deprecated_classes(self) -> Container[str]:
         """Callback returning the deprecated methods/functions.
 
         Returns:
@@ -84,6 +100,22 @@ class DeprecatedMixin:
         # pylint: disable=no-self-use
         # pylint: disable=unused-argument
         return ()
+
+    def check_deprecated_class(self, node, inferred):
+        breakpoint()
+        if not isinstance(inferred, astroid.ClassDef):
+            return
+        if isinstance(node.func, astroid.Attribute):
+            func_name = node.func.attrname
+        elif isinstance(node.func, astroid.Name):
+            func_name = node.func.name
+        else:
+            # Not interested in other nodes.
+            return
+        qname = inferred.qname()
+        if any(name in self.deprecated_classes() for name in (qname, func_name)):
+            self.add_message("deprecated-class", node=node, args=(func_name,))
+            return
 
     def check_deprecated_method(self, node, inferred):
         """Executes the checker for the given node. This method should

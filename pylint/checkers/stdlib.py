@@ -163,6 +163,11 @@ class StdlibChecker(DeprecatedMixin, BaseChecker):
             "`check` keyword to make clear what the error-handling behavior is."
             "https://docs.python.org/3/library/subprocess.html#subprocess.run",
         ),
+        "W1555": (
+            "Using deprecated class %s()",
+            "deprecated-class",
+            "The class is marked as deprecated and will be removed in the future.",
+        ),
     }
 
     deprecated = {
@@ -340,6 +345,7 @@ class StdlibChecker(DeprecatedMixin, BaseChecker):
                     elif name == SUBPROCESS_RUN:
                         self._check_for_check_kw_in_run(node)
                 self.check_deprecated_method(node, inferred)
+                self.check_deprecated_class(node, inferred)
         except astroid.InferenceError:
             return
 
@@ -461,6 +467,10 @@ class StdlibChecker(DeprecatedMixin, BaseChecker):
             if since_vers <= sys.version_info:
                 deprecated_methods.update(func_list)
         return deprecated_methods
+
+
+    def deprecated_classes(self):
+        return ('functools.partialmethod',)
 
 
 def register(linter):
