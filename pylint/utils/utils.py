@@ -243,7 +243,8 @@ def register_plugins(linter, directory):
     """
     imported = {}
     for filename in os.listdir(directory):
-        base, extension = os.path.splitext(filename)
+        _, extension = os.path.splitext(filename)
+        base = filename.split('.')[0]
         if base in imported or base == "__pycache__":
             continue
         if (
@@ -255,9 +256,10 @@ def register_plugins(linter, directory):
                 and not filename.startswith(".")
             )
         ):
+
             try:
                 module = modutils.load_module_from_file(
-                    os.path.join(directory, filename)
+                    os.path.join(directory, base)
                 )
             except ValueError:
                 # empty module name (usually emacs auto-save files)
