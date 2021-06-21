@@ -6,4 +6,4 @@ pre-commit~=2.13;python_full_version>="3.6.2"
 pyenchant~=3.2
 pytest-cov~=2.12
 pytest-profiling~=1.7
-pytest-xdist~=2.2
+pytest-xdist~=2.3
